@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        p {
+            text-align: center;
+            max-width: 600px;
+        }
+        .service-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        #imageContainer {
+            max-width: 80%;
+            max-height: 80vh;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #randomImage {
+            max-width: 100%;
+            max-height: 60vh;
+            display: none;
+        }
+        #commentSection {
+            margin-top: 20px;
+            width: 100%;
+        }
+        #commentInput {
+            width: 70%;
+            padding: 5px;
+        }
+        #commentSubmit {
+            padding: 5px 10px;
+        }
+        #comments {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .comment {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>le page (what the fuck is html)</h1>
+    <div>
+        <a href="http://grobique.mooo.com:8000" class="button">grobique radio</a>
+        <p class="service-description">comically weird online radio. my playlist, basically.</p>
+        <a href="http://grobique.mooo.com:7860" class="button">grobique diffusion</a>
+        <p class="service-description">stable diffusion! test your luck if this thing is working</p>
+        <button id="randomPicButton" class="button">random pic from my folders</button>
+        <input type="text" id="commentInput" placeholder="your honest opinion">
+        <button id="commentSubmit" class="button">share your opinion</button>
+    </div>
+    <div id="imageContainer">
+        <img id="randomImage" src="" alt="Random picture">
+        <div id="commentSection">
+            <div id="comments"></div>
+        </div>
+    </div>
+    <a href="/minecraft" class="button">Minecraft Server Page</a>
+
+    <script>
+        let currentImagePath = '';
+
+        document.getElementById('randomPicButton').addEventListener('click', function() {
+            fetch('/random_image')
+                .then(response => {
+                    currentImagePath = response.headers.get('X-Image-Path');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const img = document.getElementById('randomImage');
+                    img.src = URL.createObjectURL(blob);
+                    img.style.display = 'block';
+                    fetchComments();
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('commentSubmit').addEventListener('click', function() {
+            const comment = document.getElementById('commentInput').value;
+            if (comment && currentImagePath) {
+                fetch('/add_comment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `image_path=${encodeURIComponent(currentImagePath)}&comment=${encodeURIComponent(comment)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('commentInput').value = '';
+                    fetchComments();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+
+        function fetchComments() {
+            if (currentImagePath) {
+                fetch(`/get_comments?image_path=${encodeURIComponent(currentImagePath)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const commentsContainer = document.getElementById('comments');
+                        commentsContainer.innerHTML = '';
+                        data.forEach(comment => {
+                            const commentElem = document.createElement('div');
+                            commentElem.className = 'comment';
+                            commentElem.textContent = comment;
+                            commentsContainer.appendChild(commentElem);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
+</html>
