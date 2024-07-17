@@ -21,7 +21,15 @@ suspicious_activity = defaultdict(list)
 
 # Список паттернов подозрительных запросов
 SUSPICIOUS_PATTERNS = [
-'nope, not sharing in any case~'
+    r'phpMyAdmin',
+    r'/cgi-bin/',
+    r'setup.cgi',
+    r'cmd=rm+-rf',
+    r'wget+http://',
+    r'\$\(.*\)',  # Попытки выполнения команд
+    r'eval\(',    # Попытки выполнения кода
+    r'base64_decode\(',
+    r'(?:\.\.\/){2,}',  # Path traversal
 ]
 
 # Функции для работы с файлами
