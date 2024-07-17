@@ -11,3 +11,4 @@ Imaginbe being so fucking retarted so you host a fucking web page with python.
 - get a better internet
 - order pizza
 - more silly ghosb pictures
+- relative to pictures - image search button so anyone can find original
