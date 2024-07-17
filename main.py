@@ -21,7 +21,28 @@ suspicious_activity = defaultdict(list)
 
 # Список паттернов подозрительных запросов
 SUSPICIOUS_PATTERNS = [
+    r'(?i)(nmap|nikto|wikto|sf|sqlmap|bsqlbf|w3af|acunetix|havij|appscan)',
+    r'/\.[^/]*$',
+    r'(?i)\.(php|asp|aspx|jsp|cgi|exe|bat|cmd|sh|pl)$',
+    r'(?i)etc/passwd',
+    r'(?i)etc/shadow',
+    r'(?i)proc/self/environ',
+    r'(?:/\.\.){2,}',  # Дополнительный паттерн для path traversal
+    r'(?i)admin',
+    r'(?i)password',
+    r'(?i)login',
+    r';&|&&|\|\||;',  # Разделители команд
+    r'\bping\b|\bnetcat\b|\bnc\b|\btelnet\b|\bnetstat\b',
+    r'\bchmod\b|\bchown\b|\bchgrp\b|\bmkdir\b',
+    r'(?i)(include|require)(_once)?\s*\(',
+    r'(?i)upload\s*\(',
+    r'<script.*?>',
+    r'(?i)on\w+\s*=',  # Обработчики событий
+    r'(?i)javascript:',
     r'phpMyAdmin',
+    r'.env',
+    r'cgi',
+    r'conf.bin',
     r'/cgi-bin/',
     r'setup.cgi',
     r'cmd=rm+-rf',
