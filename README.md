@@ -1,4 +1,4 @@
-Imaginbe being so fucking retarted so you host a fucking web page with python.
+Imaginbe being so stupid so you host a dam web page with python.
 
 # TODO:
 - get some feedback ffs
