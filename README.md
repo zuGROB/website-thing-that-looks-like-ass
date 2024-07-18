@@ -7,7 +7,7 @@ Imaginbe being so stupid so you host a dam web page with python.
 - improve modpack download speed
 - more funny and goofy features. why? no idea.
 - icecast! because raw audio is no fun, maybe someone wants to know whats playing rn.
-- the uuhuhhh eermmmm
+- ***the uuhuhhh eermmmm***
 - get a better internet
 - order pizza
 - more silly ghosb pictures
