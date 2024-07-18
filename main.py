@@ -23,7 +23,7 @@ suspicious_activity = defaultdict(list)
 SUSPICIOUS_PATTERNS = [
     r'(?i)(nmap|nikto|wikto|sf|sqlmap|bsqlbf|w3af|acunetix|havij|appscan)',
     r'/\.[^/]*$',
-    r'(?i)\.(php|asp|aspx|jsp|cgi|exe|bat|cmd|sh|pl)$',
+    r'(?i)\.(asp|aspx|jsp|cgi|exe|bat|cmd|sh|pl)$',
     r'(?i)etc/passwd',
     r'(?i)etc/shadow',
     r'(?i)proc/self/environ',
@@ -42,6 +42,7 @@ SUSPICIOUS_PATTERNS = [
     r'phpMyAdmin',
     r'.env',
     r'cgi',
+    r'HNAP',
     r'conf.bin',
     r'/cgi-bin/',
     r'setup.cgi',
