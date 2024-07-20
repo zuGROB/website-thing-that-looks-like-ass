@@ -205,6 +205,25 @@ class MyHandler(SimpleHTTPRequestHandler):
                         self.wfile.write(buffer)
             else:
                 self.send_error(404, "Modpack not found")
+
+        elif self.path == '/download_modpack_serverside':
+            serverside_modpack_path = r'C:\Users\user\Documents\WEB\data\serverside.zip'
+            if os.path.exists(serverside_modpack_path):
+                file_size = os.path.getsize(serverside_modpack_path)
+                self.send_response(200)
+                self.send_header('Content-type', 'application/zip')
+                self.send_header('Content-Disposition', 'attachment; filename="serverside.zip"')
+                self.send_header('Content-Length', str(file_size))
+                self.end_headers()
+                with open(serverside_modpack_path, 'rb') as f:
+                    buffer_size = 64 * 1024  # 64 KB буфер
+                    while True:
+                        buffer = f.read(buffer_size)
+                        if not buffer:
+                            break
+                        self.wfile.write(buffer)
+            else:
+                self.send_error(404, "Modpack not found")
         else:
             super().do_GET()
 
