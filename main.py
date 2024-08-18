@@ -12,33 +12,25 @@ import shutil
 
 # Пути к файлам
 COMMENTS_FILE = 'comments.json'
+REACTIONS_FILE = 'reactions.json'
 BANNED_IPS_FILE = 'banned_ips.json'
 
 # Глобальные переменные
 comments = {}
+reactions = {}
 banned_ips = set()
 suspicious_activity = defaultdict(list)
 
 # Список паттернов подозрительных запросов
 SUSPICIOUS_PATTERNS = [
     r'(?i)(nmap|nikto|wikto|sf|sqlmap|bsqlbf|w3af|acunetix|havij|appscan)',
-    r'/\.[^/]*$',
-    r'(?i)\.(asp|aspx|jsp|cgi|exe|bat|cmd|sh|pl)$',
     r'(?i)etc/passwd',
     r'(?i)etc/shadow',
     r'(?i)proc/self/environ',
-    r'(?:/\.\.){2,}',  # Дополнительный паттерн для path traversal
     r'(?i)admin',
     r'(?i)password',
     r'(?i)login',
-    r';&|&&|\|\||;',  # Разделители команд
     r'\bping\b|\bnetcat\b|\bnc\b|\btelnet\b|\bnetstat\b',
-    r'\bchmod\b|\bchown\b|\bchgrp\b|\bmkdir\b',
-    r'(?i)(include|require)(_once)?\s*\(',
-    r'(?i)upload\s*\(',
-    r'<script.*?>',
-    r'(?i)on\w+\s*=',  # Обработчики событий
-    r'(?i)javascript:',
     r'phpMyAdmin',
     r'.env',
     r'cgi',
@@ -48,10 +40,7 @@ SUSPICIOUS_PATTERNS = [
     r'setup.cgi',
     r'cmd=rm+-rf',
     r'wget+http://',
-    r'\$\(.*\)',  # Попытки выполнения команд
-    r'eval\(',    # Попытки выполнения кода
     r'base64_decode\(',
-    r'(?:\.\.\/){2,}',  # Path traversal
 ]
 
 # Функции для работы с файлами
@@ -70,8 +59,15 @@ def load_comments():
     global comments
     comments = load_json(COMMENTS_FILE, {})
 
+def load_reactions():
+    global reactions
+    reactions = load_json(REACTIONS_FILE, {})
+
 def save_comments():
     save_json(COMMENTS_FILE, comments)
+
+def save_reactions():
+    save_json(REACTIONS_FILE, reactions)
 
 def load_banned_ips():
     global banned_ips
@@ -186,6 +182,14 @@ class MyHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             with open('minecraft.html', 'rb') as f:
                 self.wfile.write(f.read())
+        elif self.path.startswith('/get_reactions'):
+            query = urllib.parse.urlparse(self.path).query
+            params = urllib.parse.parse_qs(query)
+            image_path = params.get('image_path', [''])[0]
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(reactions.get(image_path, {})).encode())
     
         elif self.path == '/download_modpack':
             modpack_path = r'C:\Users\user\Documents\WEB\data\modpack.zip'
@@ -265,6 +269,25 @@ class MyHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({"status": "success"}).encode())
             else:
                 self.send_error(400, "Bad Request")
+        elif self.path == '/add_reaction':
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            params = urllib.parse.parse_qs(post_data)
+            image_path = params.get('image_path', [''])[0]
+            reaction = params.get('reaction', [''])[0]
+            if image_path and reaction:
+                if image_path not in reactions:
+                    reactions[image_path] = {}
+                if reaction not in reactions[image_path]:
+                    reactions[image_path][reaction] = 0
+                reactions[image_path][reaction] += 1
+                save_reactions()
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "success"}).encode())
+            else:
+                self.send_error(400, "Bad Request")
         else:
             self.send_error(404, "Not Found")
 
@@ -292,6 +315,7 @@ def run_server(port=80):
     httpd.serve_forever()
 
 if __name__ == '__main__':
+    load_reactions()
     load_comments()
     load_banned_ips()
     all_images = find_images()

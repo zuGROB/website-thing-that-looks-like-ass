@@ -35,13 +35,26 @@
             background-color: #2980b9;
         }
         #imageContainer {
-            margin-top: 20px;
-            text-align: center;
-        }
+            margin-top: auto;
+			height: 350px;
+			max-height: 350px;
+			text-align: center;
+			margin-left: auto;
+			margin-right: auto;
+			background-color: #d0d0d0;
+			border-radius: 5px;
+		}
         #randomImage {
-            max-width: 100%;
+            max-height: 350px;
+			max-width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: auto;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+			opacity: 0;
+			text-align: center;
+			transition: opacity 0.5s ease-in-out;
         }
         #commentSection {
             margin-top: 20px;
@@ -56,6 +69,26 @@
             border-radius: 5px;
             margin-bottom: 20px;
         }
+		.reactions {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+		.reaction {
+            font-size: 2em;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .reaction:hover {
+            transform: scale(1.2);
+        }
+        .reaction span {
+            margin-left: 5px;
+            font-size: 0.7em;
+		}
         #comments {
             margin-top: 20px;
         }
@@ -65,17 +98,97 @@
             margin-bottom: 10px;
             border-radius: 5px;
         }
+/* Выпадающее меню */
+		#menuContainer {
+            display: flex;
+            justify-content: center; /* Выровнять по центру */
+            gap: 0px; /* Расстояние между кнопками */
+            margin-bottom: 12px;
+        }
+        .menu {
+            position: relative;
+            display: inline-block;
+        }
+        .menu-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .menu-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .menu-content a:hover {
+            background-color: #ddd;
+        }
+        .menu:hover .menu-content {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <h1>(wtf is html)</h1>
+    <h1 class="animated-title">(wtf is html)</h1>
     
-    <div>
-        <a href="http://grobique.online:8000" class="button">radio, mein radio</a>
-        <p>comically cursed online radio. basically my playlist</p>
-        
-        <a href="http://grobique.online:7860" class="button">stable diffusion</a>
-        <p>regular A1111 sd..</p>
+    <div id="menuContainer">
+	<div class="menu">
+        <button class="button">SERVER</button>
+			<div class="menu-content">
+				<a href="/minecraft">server info</a>
+				<a class="button">WIP.</a>
+			</div>
+		</div>
+        <div class="menu">
+            <button class="button">radio</button>
+            <div class="menu-content">
+                <a href="http://grobique.online:8000/live">stream</a>
+                <a href="http://grobique.online:8000">broadcast data</a>
+            </div>
+        </div>
+
+        <div class="menu">
+            <button class="button">contacts</button>
+            <div class="menu-content">
+                <a href="https://discordapp.com/users/342573175156113418">Discord</a>
+                <a href="https://x.com/tsuGROB">X (Twitter)</a>
+                <a href="https://youtube.com/@gardenerofthesun">YouTube</a>
+                <a href="https://t.me/zugr0b">Telegram</a>
+            </div>
+        </div>
+
+        <div class="menu">
+            <button class="button">donate</button>
+			<div class="menu-content">
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>	
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				<a href="https://boosty.to/grobique">donate</a>
+				
+			</div>
+        </div>
+    </div>
         
         <button onclick="loadRandomImage()" class="button">random pic from my folders</button>
 
@@ -87,34 +200,42 @@
     <div id="imageContainer">
         <img src="" id="randomImage" alt="random">
     </div>
-
+	<div class="reactions">
+        <div class="reaction" onclick="sendReaction('💜')">💜 <span id="heartCount">0</span></div>
+        <div class="reaction" onclick="sendReaction('💀')">💀 <span id="skullCount">0</span></div>
+        <div class="reaction" onclick="sendReaction('👍')">👍 <span id="thumbsCount">0</span></div>
+    </div>
     <div id="commentSection">
         <h3>your honest opinios</h3>
         <div id="comments"></div>
         <textarea id="newComment" rows="2" cols="20"></textarea>
         <button onclick="addComment()" class="button">share it</button>
     </div>
-
-    <a href="/minecraft" class="button">minecraft server???</a>
-
     <p>source code availabale on <a href="https://github.com/zuGROB/website-thing-that-looks-like-ass/tree/main">GitHub</a></p>
 
     <script>
         let currentImagePath = '';
-
         function loadRandomImage() {
-            fetch('/random_image')
-                .then(response => {
-                    currentImagePath = response.headers.get('X-Image-Path');
-                    return response.blob();
-                })
-                .then(blob => {
-                    const img = document.getElementById('randomImage');
-                    img.src = URL.createObjectURL(blob);
-                    loadComments();
-                })
-                .catch(error => console.error('Error:', error));
-        }
+			const img = document.getElementById('randomImage');
+			img.style.opacity = '0';
+			setTimeout(() => {
+				fetch('/random_image')
+					.then(response => {
+						currentImagePath = response.headers.get('X-Image-Path');
+						return response.blob();
+					})
+					.then(blob => {
+						img.src = URL.createObjectURL(blob);
+						img.onload = () => { 
+							// Плавное появление новой картинки
+							img.style.opacity = '1';
+						};
+						loadComments();
+						loadReactions();
+					})
+					.catch(error => console.error('Error:', error));
+			}, 500);
+		}
 
         function loadComments() {
             fetch(`/get_comments?image_path=${encodeURIComponent(currentImagePath)}`)
@@ -147,6 +268,33 @@
                 if (data.status === 'success') {
                     document.getElementById('newComment').value = '';
                     loadComments();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+		function loadReactions() {
+            fetch(`/get_reactions?image_path=${encodeURIComponent(currentImagePath)}`)
+                .then(response => response.json())
+                .then(reactions => {
+                    document.getElementById('heartCount').textContent = reactions['💜'] || 0;
+                    document.getElementById('skullCount').textContent = reactions['💀'] || 0;
+                    document.getElementById('thumbsCount').textContent = reactions['👍'] || 0;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function sendReaction(reaction) {
+            fetch('/add_reaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `image_path=${encodeURIComponent(currentImagePath)}&reaction=${encodeURIComponent(reaction)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    loadReactions();  // Обновляем счетчики после отправки реакции
                 }
             })
             .catch(error => console.error('Error:', error));
